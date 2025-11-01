@@ -38,12 +38,13 @@ def init_agent():
 
     return agent
 
+agent = init_agent()
+
+
 async def review_node(state: ActionReview) -> ActionReview:
     count = 0
     if "count" in state:
         count = state["count"]
-
-    agent = init_agent()
     
     if count == 0:
         user_prompt = f"""
