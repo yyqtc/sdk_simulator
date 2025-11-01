@@ -38,11 +38,15 @@ async def counter_node(state: ActionReview) -> Union[PlanExecute, END]:
             }
 
         else:
+            check_input = input(f"请你检查审核员的意见文件是否满足你的要求。检查完毕后输入回车继续...")
             return {
                 "count": 0
             }
     
     else:
+        if count != 0:
+            check_input = input(f"请你检查审核员的意见文件是否满足你的要求。检查完毕后输入回车继续...")
+
         return {
                 "count": count
             }

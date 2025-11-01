@@ -2,8 +2,8 @@
     "LANGCHAIN_API_KEY": "your-langchain-api-key",
     "QWEN_API_KEY": "your-qwen-api-key",
     "QWEN_API_BASE": "https://dashscope.aliyuncs.com/compatible-mode/v1",
-    "USE_DOC_PATH": "your-use-document-path",
-    "SDK_FILE_PATH": "your-sdk-path-path",
-    "OPINION_FILE_PATH": "your-opinion-path-path",
+    "USE_DOC_PATH": "./md/your-use-document-path.md",
+    "SDK_FILE_PATH": "./sdk/your-sdk-path-path.js",
+    "OPINION_FILE_PATH": "./opinion/your-opinion-path-path.md",
     "HUMAN_CHECK_THRESHOLD": 3
 }

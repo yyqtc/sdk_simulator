@@ -60,7 +60,6 @@ def write_sdk_file(content: str) -> str:
     写入sdk文件的内容
 
     Args:
-        file_name: 文件的名称，需要带上扩展名
         content: 文件的内容
     
     Returns:
