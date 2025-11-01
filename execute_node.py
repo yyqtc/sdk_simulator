@@ -48,6 +48,8 @@ async def execute_node(state: ActionReview) -> ActionReview:
     if "count" in state:
         count = state["count"]
     
+    logger.info("正在创建模拟sdk的js文件...")
+
     if count == 0:
         user_prompt = """
         请根据sdk的使用文档，写一个模拟sdk的js文件。

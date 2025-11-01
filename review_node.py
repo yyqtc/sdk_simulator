@@ -46,6 +46,8 @@ async def review_node(state: ActionReview) -> ActionReview:
     if "count" in state:
         count = state["count"]
     
+    logger.info(f"正在执行第{count + 1}轮审核...")
+
     if count == 0:
         user_prompt = f"""
         当前你正在进行第{count + 1}轮审核。

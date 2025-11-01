@@ -18,7 +18,13 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-async def counter_node(state: ActionReview) -> Union[PlanExecute, END]:
+async def counter_node(state: ActionReview) -> Union[ActionReview, END]:
+    if config["HUMAN_REVIEW_THRESHOLD"] == 0:
+        logger.info("请你检查配置，将HUMAN_REVIEW_THRESHOLD设置为大于0的值，否则工作流将无法正常进行。")
+        return {
+            "response": "error"
+        }
+
     count = 0
     if "count" in state:
         count = state["count"]
@@ -38,15 +44,24 @@ async def counter_node(state: ActionReview) -> Union[PlanExecute, END]:
             }
 
         else:
-            check_input = input(f"请你检查审核员的意见文件是否满足你的要求。检查完毕后输入回车继续...")
-            return {
-                "count": 0
-            }
-    
+            check_input = input(f"请检查审核意见{config["OPINION_FILE_PATH"]}。如果你认为没有必要继续修改，请输入“pass”。如果你认为有必要继续修改，请输入“reject”：")
+            if check_input == "pass":
+                return {
+                    "response": "pass"
+                }
+            else:
+                return {
+                    "count": 0
+                }
+
     else:
         if count != 0:
-            check_input = input(f"请你检查审核员的意见文件是否满足你的要求。检查完毕后输入回车继续...")
-
-        return {
-                "count": count
-            }
+            check_input = input(f"请检查审核意见{config["OPINION_FILE_PATH"]}。如果你认为没有必要继续修改，请输入“pass”。如果你认为有必要继续修改，请输入“reject”：")
+            if check_input == "pass":
+                return {
+                    "response": "pass"
+                }
+            else:
+                return {
+                    "count": count
+                }
