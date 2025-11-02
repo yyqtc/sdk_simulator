@@ -91,4 +91,24 @@ def read_opinion_file() -> str:
         return f.read()
 
 
-tools = [read_sdk_use_doc, read_sdk_file, write_sdk_file, read_opinion_file]
+@tool
+def read_history_file() -> str:
+    """
+    读取历史文件的内容
+
+    Args:
+        无
+    
+    Returns:
+        如果文件不存在，返回“文件不存在”
+        如果文件存在且扩展名是.js，返回上一轮修改后的模拟sdk的js文件的内容
+    """
+    logger.info("use read_history_file tool")
+    if not os.path.exists(config["HISTORY_FILE_PATH"]):
+        return "文件不存在"
+    
+    with open(config["HISTORY_FILE_PATH"], "r", encoding="utf-8") as f:
+        return f.read()
+
+
+tools = [read_sdk_use_doc, read_sdk_file, write_sdk_file, read_opinion_file, read_history_file]

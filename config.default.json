@@ -5,5 +5,5 @@
     "USE_DOC_PATH": "./md/your-use-document-path.md",
     "SDK_FILE_PATH": "./sdk/your-sdk-path-path.js",
     "OPINION_FILE_PATH": "./opinion/your-opinion-path-path.md",
-    "HUMAN_CHECK_THRESHOLD": 3
+    "HISTORY_FILE_PATH": "./history/your-history-path-path.js"
 }

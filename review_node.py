@@ -50,7 +50,7 @@ async def review_node(state: ActionReview) -> ActionReview:
 
     if count == 0:
         user_prompt = f"""
-        当前你正在进行第{count + 1}轮审核。
+        当前你正在进行第{count}轮审核。
         请根据sdk的使用文档，检查模拟sdk的js文件是否符合sdk的使用文档的说明。
         如果你认为模拟sdk符合sdk的使用文档的说明，就审核通过，并结束修改模拟sdk。
         如果你认为模拟sdk不符合sdk的使用文档的说明，就需要你将你的检查结果以审核员意见文件的形式保存，并让前端工程师继续修改模拟sdk。
@@ -70,7 +70,7 @@ async def review_node(state: ActionReview) -> ActionReview:
 
         if isinstance(response.action, Action):
             return {
-                "count": response.action.count - 1
+                "count": response.action.count
             }
         
         elif isinstance(response.action, Response):
@@ -80,7 +80,7 @@ async def review_node(state: ActionReview) -> ActionReview:
 
     else:
         user_prompt = f"""
-        当前你正在进行第{count + 1}轮审核。
+        当前你正在进行第{count}轮审核。
         请根据sdk的使用文档和上一轮的审核意见，检查模拟sdk的js文件是否符合sdk的使用文档的说明，并检查sdk文档是否已经修复了上一轮的审核提出的问题。
         如果你认为模拟sdk符合sdk的使用文档的说明，就审核通过，并结束修改模拟sdk。
         如果你认为模拟sdk不符合sdk的使用文档的说明，就需要你将你的检查结果以审核员意见文件的形式保存，并让前端工程师继续修改模拟sdk。
@@ -98,7 +98,7 @@ async def review_node(state: ActionReview) -> ActionReview:
         response = response["structured_response"]
         if isinstance(response.action, Action):
             return {
-                "count": response.action.count - 1
+                "count": response.action.count
             }
         
         elif isinstance(response.action, Response):
