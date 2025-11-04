@@ -1,9 +1,10 @@
 # SDK 模拟器
 
-一个基于 LangGraph 和 AI 代理的 SDK 模拟代码自动生成工具。该工具能够根据 SDK 使用文档自动生成对应的 JavaScript 模拟 SDK 文件，并通过多轮审核迭代机制确保生成代码的质量和准确性。
+一个基于 LangGraph 和 AI 代理的 **多语言 SDK 模拟代码自动生成工具**。该工具能够根据 SDK 使用文档自动生成对应**任意编程语言**的模拟 SDK 文件（Python、JavaScript、TypeScript、Java、Go、Rust 等），并通过多轮审核迭代机制确保生成代码的质量和准确性。
 
 ## 功能特性
 
+- 🌍 **多语言支持**：✨ **核心亮点** - 支持生成任意编程语言的 SDK（Python、JavaScript、TypeScript、Java、Go、Rust、C#、PHP 等），只需通过配置文件指定目标语言和文件扩展名
 - 🤖 **AI 驱动生成**：使用 Qwen 模型自动根据 SDK 使用文档生成模拟 SDK 代码
 - 🔄 **迭代优化机制**：通过执行-审核-修正的循环流程，不断优化生成的 SDK
 - 👤 **人工审核集成**：每轮审核后支持人工介入决策是否继续迭代
@@ -23,13 +24,17 @@ sdk_simulator/
 ├── review_tool.py          # 审核器工具集（读写审核意见文件等）
 ├── custom_type.py          # 自定义类型定义
 ├── config.json             # 配置文件（需要根据 config.default.json 创建）
-├── config.default.py       # 配置文件模板
+├── config.default.json     # 配置文件模板
 ├── requirement.txt         # Python 依赖包列表
 ├── md/                     # SDK 使用文档目录
 │   ├── sdk.md             # SDK 使用文档
 │   └── img/               # 文档图片资源
 ├── sdk/                    # 生成的 SDK 文件目录
-│   └── sim_sdk.py         # 模拟 SDK JavaScript 文件
+│   ├── sim_sdk.py         # Python SDK 示例
+│   ├── sim_sdk.js         # JavaScript SDK 示例
+│   ├── sim_sdk.ts         # TypeScript SDK 示例
+│   └── sim_sdk.java       # Java SDK 示例
+│   # ... 支持任意语言的 SDK 文件
 ├── opinion/                # 审核意见目录
 │   └── opinion.md         # 审核员意见文件
 └── history/                # 历史版本目录（自动创建）
@@ -57,6 +62,7 @@ START → counter → execute → review → counter → ...
    - 如果是第一轮（count=0）：根据 SDK 使用文档生成模拟 SDK 文件
    - 如果是后续轮次：根据 SDK 使用文档和审核意见修改 SDK 文件
    - 使用 AI 代理（软件开发工程师角色）执行代码生成/修改
+   - 🌍 **智能语言识别**：AI 会根据文件扩展名和 `SDK_LANGUAGE` 配置自动识别目标语言，生成符合该语言语法和最佳实践的代码
    - AI 代理会将所做的修改以注释形式体现在 SDK 文件中
    - 如果需要生成图片，会生成白色纯色图片
 
@@ -92,15 +98,81 @@ cp config.default.json config.json
     "USE_DOC_PATH": "./md/sdk.md",                           // SDK 使用文档路径
     "SDK_FILE_PATH": "./sdk/sim_sdk.py",                     // 生成的 SDK 文件路径
     "OPINION_FILE_PATH": "./opinion/opinion.md",             // 审核意见文件路径
-    "HISTORY_FILE_PATH": "./history/history_sim_sdk.py"      // 历史版本文件路径（自动备份）
+    "HISTORY_FILE_PATH": "./history/history_sim_sdk.py",      // 历史版本文件路径（自动备份）
+    "SDK_LANGUAGE": "python"                                 // 目标语言（可选，AI 会根据文件扩展名自动识别）
 }
 ```
 
-**注意**：请确保 `history/` 目录存在，或者在首次运行前创建该目录。
+### 🌍 多语言配置示例
+
+**核心优势**：通过修改 `SDK_FILE_PATH` 的文件扩展名和 `SDK_LANGUAGE`，即可生成不同编程语言的 SDK！
+
+#### Python SDK
+```json
+{
+    "SDK_FILE_PATH": "./sdk/sim_sdk.py",
+    "HISTORY_FILE_PATH": "./history/history_sim_sdk.py",
+    "SDK_LANGUAGE": "python"
+}
+```
+
+#### JavaScript SDK
+```json
+{
+    "SDK_FILE_PATH": "./sdk/sim_sdk.js",
+    "HISTORY_FILE_PATH": "./history/history_sim_sdk.js",
+    "SDK_LANGUAGE": "javascript"
+}
+```
+
+#### TypeScript SDK
+```json
+{
+    "SDK_FILE_PATH": "./sdk/sim_sdk.ts",
+    "HISTORY_FILE_PATH": "./history/history_sim_sdk.ts",
+    "SDK_LANGUAGE": "typescript"
+}
+```
+
+#### Java SDK
+```json
+{
+    "SDK_FILE_PATH": "./sdk/SimSDK.java",
+    "HISTORY_FILE_PATH": "./history/HistorySimSDK.java",
+    "SDK_LANGUAGE": "java"
+}
+```
+
+#### Go SDK
+```json
+{
+    "SDK_FILE_PATH": "./sdk/sim_sdk.go",
+    "HISTORY_FILE_PATH": "./history/history_sim_sdk.go",
+    "SDK_LANGUAGE": "go"
+}
+```
+
+#### Rust SDK
+```json
+{
+    "SDK_FILE_PATH": "./sdk/sim_sdk.rs",
+    "HISTORY_FILE_PATH": "./history/history_sim_sdk.rs",
+    "SDK_LANGUAGE": "rust"
+}
+```
+
+**注意**：
+- 请确保 `history/` 目录存在，或者在首次运行前创建该目录
+- AI 会根据文件扩展名自动识别目标语言，`SDK_LANGUAGE` 参数可选，用于明确指定语言风格和最佳实践
+- 支持所有主流编程语言，只需修改文件扩展名即可！
 
 ### 3. 准备 SDK 使用文档
 
-将 SDK 使用文档放置在 `md/sdk.md`（或配置文件中指定的路径）。
+将 SDK 使用文档放置在 `md/sdk.md`（或配置文件中指定的路径）。文档应包含：
+- SDK 的 API 接口说明
+- 使用示例和代码片段
+- 参数说明和返回值描述
+- 任何特殊配置或要求
 
 ## 使用方法
 
@@ -162,6 +234,74 @@ python main.py
 - `write_opinion_file(content)`：写入审核意见到意见文件
 - `read_opinion_file()`：读取审核员意见文件内容
 
+## 🌍 多语言 SDK 生成
+
+### 核心亮点
+
+**本项目最大的特色是支持生成任意编程语言的 SDK！** 你只需要：
+
+1. 修改配置文件中的 `SDK_FILE_PATH` 为对应语言的扩展名
+2. （可选）设置 `SDK_LANGUAGE` 参数指定目标语言
+3. 运行 `python main.py`，AI 会自动生成符合目标语言语法和最佳实践的 SDK 代码
+
+### 支持的语言
+
+- ✅ **Python** (`.py`) - 支持类、函数、类型提示等
+- ✅ **JavaScript** (`.js`) - 支持 ES6+、模块化、Promise 等
+- ✅ **TypeScript** (`.ts`) - 支持类型系统、接口、泛型等
+- ✅ **Java** (`.java`) - 支持类、接口、泛型、注解等
+- ✅ **Go** (`.go`) - 支持包、结构体、接口、错误处理等
+- ✅ **Rust** (`.rs`) - 支持所有权、生命周期、模式匹配等
+- ✅ **C#** (`.cs`) - 支持类、命名空间、LINQ 等
+- ✅ **PHP** (`.php`) - 支持类、命名空间、类型提示等
+- ✅ **更多语言** - 理论上支持所有编程语言，AI 会根据文档和语言特性自动适配
+
+### 使用生成的 SDK
+
+生成的模拟 SDK 文件位于配置文件中指定的 `SDK_FILE_PATH`。根据不同的语言，使用方式如下：
+
+#### Python SDK
+```python
+from sdk.sim_sdk import CursorCLI
+
+cli = CursorCLI()
+result = cli.analyze_codebase("分析这个代码库")
+```
+
+#### JavaScript SDK
+```javascript
+const { CursorCLI } = require('./sdk/sim_sdk');
+
+const cli = new CursorCLI();
+const result = cli.analyzeCodebase("分析这个代码库");
+```
+
+#### TypeScript SDK
+```typescript
+import { CursorCLI } from './sdk/sim_sdk';
+
+const cli = new CursorCLI();
+const result = cli.analyzeCodebase("分析这个代码库");
+```
+
+#### Java SDK
+```java
+import com.example.sim_sdk.CursorCLI;
+
+CursorCLI cli = new CursorCLI();
+AnalysisResult result = cli.analyzeCodebase("分析这个代码库");
+```
+
+#### Go SDK
+```go
+import "github.com/example/sim_sdk"
+
+cli := sim_sdk.NewCursorCLI()
+result, err := cli.AnalyzeCodebase("分析这个代码库")
+```
+
+**注意**：生成的 SDK 可能需要特定的环境变量（如 API key），请根据生成的 SDK 文档进行配置。AI 会根据目标语言的特性自动生成符合该语言习惯的代码风格和最佳实践。
+
 ## 注意事项
 
 1. **API 密钥安全**：请妥善保管 API 密钥，不要将包含真实密钥的 `config.json` 提交到版本控制系统
@@ -170,6 +310,8 @@ python main.py
 4. **图片生成**：生成的图片为白色纯色图片（符合模拟 SDK 的要求）
 5. **历史文件管理**：每轮修改前，当前 SDK 文件会自动备份到 `HISTORY_FILE_PATH`，请确保该路径所在目录存在
 6. **修改追踪**：AI 开发代理会在生成的 SDK 文件中以注释形式记录所做的修改，便于追踪变更
+7. **环境变量**：生成的 SDK 可能需要特定的环境变量（如 API key），请根据 SDK 文档在运行环境中正确配置
+8. **WSL 环境**：如果在 WSL 环境下使用生成的 SDK，请注意环境变量的设置需要在 WSL 的 shell 配置文件中进行（如 `~/.bashrc` 或 `~/.zshrc`），因为 Windows 和 WSL 的环境变量是隔离的
 
 ## 许可证
 
@@ -201,11 +343,14 @@ python main.py
 
 ## 更新日志
 
-### v0.2.0
-- 初始版本发布
+### v0.3.0
+- 🎉 初始版本发布
+- 🌍 **核心功能**：支持生成任意编程语言的 SDK（Python、JavaScript、TypeScript、Java、Go、Rust、C#、PHP 等）
 - 支持基于文档的 SDK 自动生成
 - 实现多轮审核迭代机制
 - 集成人工审核功能
 - 支持历史版本备份
 - 支持修改注释追踪
+- 支持通过配置文件自定义生成的 SDK 文件路径和语言类型
+- AI 自动识别目标语言并生成符合该语言最佳实践的代码
 
