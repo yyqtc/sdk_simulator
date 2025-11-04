@@ -23,17 +23,17 @@ sdk_simulator/
 ├── review_tool.py          # 审核器工具集（读写审核意见文件等）
 ├── custom_type.py          # 自定义类型定义
 ├── config.json             # 配置文件（需要根据 config.default.json 创建）
-├── config.default.json     # 配置文件模板
+├── config.default.py       # 配置文件模板
 ├── requirement.txt         # Python 依赖包列表
 ├── md/                     # SDK 使用文档目录
 │   ├── sdk.md             # SDK 使用文档
 │   └── img/               # 文档图片资源
 ├── sdk/                    # 生成的 SDK 文件目录
-│   └── sim_sdk.js         # 模拟 SDK JavaScript 文件
+│   └── sim_sdk.py         # 模拟 SDK JavaScript 文件
 ├── opinion/                # 审核意见目录
 │   └── opinion.md         # 审核员意见文件
 └── history/                # 历史版本目录（自动创建）
-    └── history_sim_sdk.js  # 历史版本 SDK 文件
+    └── history_sim_sdk.py  # 历史版本 SDK 文件
 ```
 
 ## 工作流程
@@ -56,7 +56,7 @@ START → counter → execute → review → counter → ...
 2. **execute（执行节点）**：
    - 如果是第一轮（count=0）：根据 SDK 使用文档生成模拟 SDK 文件
    - 如果是后续轮次：根据 SDK 使用文档和审核意见修改 SDK 文件
-   - 使用 AI 代理（前端开发工程师角色）执行代码生成/修改
+   - 使用 AI 代理（软件开发工程师角色）执行代码生成/修改
    - AI 代理会将所做的修改以注释形式体现在 SDK 文件中
    - 如果需要生成图片，会生成白色纯色图片
 
@@ -90,9 +90,9 @@ cp config.default.json config.json
     "QWEN_API_KEY": "your-qwen-api-key",                     // 阿里云 Qwen API Key
     "QWEN_API_BASE": "https://dashscope.aliyuncs.com/compatible-mode/v1",
     "USE_DOC_PATH": "./md/sdk.md",                           // SDK 使用文档路径
-    "SDK_FILE_PATH": "./sdk/sim_sdk.js",                     // 生成的 SDK 文件路径
+    "SDK_FILE_PATH": "./sdk/sim_sdk.py",                     // 生成的 SDK 文件路径
     "OPINION_FILE_PATH": "./opinion/opinion.md",             // 审核意见文件路径
-    "HISTORY_FILE_PATH": "./history/history_sim_sdk.js"      // 历史版本文件路径（自动备份）
+    "HISTORY_FILE_PATH": "./history/history_sim_sdk.py"      // 历史版本文件路径（自动备份）
 }
 ```
 

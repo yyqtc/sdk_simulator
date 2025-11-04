@@ -25,8 +25,8 @@ def init_agent():
         temperature=0.7
     )
 
-    _prompt = """
-        你是一位非常负责的审核员，我需要你根据sdk的使用文档检查模拟sdk的js文件。
+    _prompt = f"""
+        你是一位非常负责的审核员，我需要你根据sdk的使用文档检查模拟sdk的{config["SDK_LANGUAGE"]}文件。
     """
 
     agent = create_agent(
@@ -51,14 +51,14 @@ async def review_node(state: ActionReview) -> ActionReview:
     if count == 0:
         user_prompt = f"""
         当前你正在进行第{count}轮审核。
-        请根据sdk的使用文档，检查模拟sdk的js文件是否符合sdk的使用文档的说明。
+        请根据sdk的使用文档，检查模拟sdk的{config["SDK_LANGUAGE"]}文件是否符合sdk的使用文档的说明。
         如果你认为模拟sdk符合sdk的使用文档的说明，就审核通过，并结束修改模拟sdk。
-        如果你认为模拟sdk不符合sdk的使用文档的说明，就需要你将你的检查结果以审核员意见文件的形式保存，并让前端工程师继续修改模拟sdk。
+        如果你认为模拟sdk不符合sdk的使用文档的说明，就需要你将你的检查结果以审核员意见文件的形式保存，并让软件工程师继续修改模拟sdk。
         如果你认为模拟sdk不需要进一步修改，请以JSON格式输出，包含action字段，action字段应该包含response字段，response字段的值为“审核通过”。
         如果你认为模拟sdk需要进一步修改，请以JSON格式输出，包含action字段，action字段应该包含count字段，count字段的数据类型为整数，count字段的值为当前审核轮数加1。
         注意！
         1. sdk中的api应该完全符合sdk的使用文档的说明。
-        2. sdk的使用文档中描述的所有api都必须在模拟sdk的js文件中实现。
+        2. sdk的使用文档中描述的所有api都必须在模拟sdk的{config["SDK_LANGUAGE"]}文件中实现。
         3. 模拟sdk应该是可以正常运行的，不能存在语法错误或逻辑错误。
         4. 意见中不要包括图片文件或是图片的base64编码
         """
@@ -66,7 +66,10 @@ async def review_node(state: ActionReview) -> ActionReview:
             "messages": [("user", user_prompt)]
         })
 
-        response = response["structured_response"]
+        response = response.get("structured_response", None)
+        if response is None:
+            print("retry review_node")
+            return await review_node(state)
 
         if isinstance(response.action, Action):
             return {
@@ -81,21 +84,26 @@ async def review_node(state: ActionReview) -> ActionReview:
     else:
         user_prompt = f"""
         当前你正在进行第{count}轮审核。
-        请根据sdk的使用文档和上一轮的审核意见，检查模拟sdk的js文件是否符合sdk的使用文档的说明，并检查sdk文档是否已经修复了上一轮的审核提出的问题。
+        请根据sdk的使用文档和上一轮的审核意见，检查模拟sdk的{config["SDK_LANGUAGE"]}文件是否符合sdk的使用文档的说明，并检查sdk文档是否已经修复了上一轮的审核提出的问题。
         如果你认为模拟sdk符合sdk的使用文档的说明，就审核通过，并结束修改模拟sdk。
-        如果你认为模拟sdk不符合sdk的使用文档的说明，就需要你将你的检查结果以审核员意见文件的形式保存，并让前端工程师继续修改模拟sdk。
+        如果你认为模拟sdk不符合sdk的使用文档的说明，就需要你将你的检查结果以审核员意见文件的形式保存，并让软件工程师继续修改模拟sdk。
         如果你认为模拟sdk不需要进一步修改，请以JSON格式输出，包含action字段，action字段应该包含response字段，response字段的值为“审核通过”。
         如果你认为模拟sdk需要进一步修改，请以JSON格式输出，包含action字段，action字段应该包含count字段，count字段的数据类型为整数，count字段的值为当前审核轮数加1。
         注意！
         1. sdk中的api应该完全符合sdk的使用文档的说明。
-        2. sdk的使用文档中描述的所有api都必须在模拟sdk的js文件中实现。
+        2. sdk的使用文档中描述的所有api都必须在模拟sdk的{config["SDK_LANGUAGE"]}文件中实现。
         3. 模拟sdk应该是可以正常运行的，不能存在语法错误或逻辑错误。
+        4. 模拟sdk不应该调用网络接口请求或传输数据，如果需要调用网络接口，模拟延时然后直接返回静态数据即可。
         """
         response = await agent.ainvoke({
             "messages": [("user", user_prompt)]
         })
 
-        response = response["structured_response"]
+        response = response.get("structured_response", None)
+        if response is None:
+            print("retry review_node")
+            return await review_node(state)
+        
         if isinstance(response.action, Action):
             return {
                 "count": response.action.count

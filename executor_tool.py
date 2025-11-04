@@ -45,7 +45,7 @@ def read_sdk_file() -> str:
     
     Returns:
         如果文件不存在，返回“文件不存在”
-        如果文件存在且扩展名是.js，返回文件的内容
+        如果文件存在且扩展名是.py，返回文件的内容
     """
     logger.info("use read_sdk_file tool")
     if not os.path.exists(config["SDK_FILE_PATH"]):
@@ -101,7 +101,7 @@ def read_history_file() -> str:
     
     Returns:
         如果文件不存在，返回“文件不存在”
-        如果文件存在且扩展名是.js，返回上一轮修改后的模拟sdk的js文件的内容
+        如果文件存在且扩展名是.py，返回上一轮修改后的模拟sdk的py文件的内容
     """
     logger.info("use read_history_file tool")
     if not os.path.exists(config["HISTORY_FILE_PATH"]):
