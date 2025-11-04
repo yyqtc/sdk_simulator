@@ -26,19 +26,14 @@ sdk_simulator/
 ├── config.json             # 配置文件（需要根据 config.default.json 创建）
 ├── config.default.json     # 配置文件模板
 ├── requirement.txt         # Python 依赖包列表
-├── md/                     # SDK 使用文档目录
-│   ├── sdk.md             # SDK 使用文档
-│   └── img/               # 文档图片资源
-├── sdk/                    # 生成的 SDK 文件目录
-│   ├── sim_sdk.py         # Python SDK 示例
-│   ├── sim_sdk.js         # JavaScript SDK 示例
-│   ├── sim_sdk.ts         # TypeScript SDK 示例
-│   └── sim_sdk.java       # Java SDK 示例
-│   # ... 支持任意语言的 SDK 文件
-├── opinion/                # 审核意见目录
-│   └── opinion.md         # 审核员意见文件
-└── history/                # 历史版本目录（自动创建）
-    └── history_sim_sdk.py  # 历史版本 SDK 文件
+├── md/                     # SDK 使用文档目录（用户提供）
+│   └── img/               # 文档图片资源（可选）
+├── sdk/                    # 生成的 SDK 文件目录（自动生成，不会被版本控制）
+│   └── [生成的 SDK 文件]   # 根据配置生成对应语言的 SDK 文件
+├── opinion/                # 审核意见目录（自动生成，不会被版本控制）
+│   └── [审核意见文件]      # 审核过程中自动生成的意见文件
+└── history/                # 历史版本目录（自动创建，不会被版本控制）
+    └── [历史版本文件]      # 每轮修改前自动备份的 SDK 文件
 ```
 
 ## 工作流程
@@ -92,16 +87,23 @@ cp config.default.json config.json
 
 ```json
 {
-    "LANGCHAIN_API_KEY": "your-langchain-api-key",           // LangChain API Key
-    "QWEN_API_KEY": "your-qwen-api-key",                     // 阿里云 Qwen API Key
+    "LANGCHAIN_API_KEY": "your-langchain-api-key",
+    "QWEN_API_KEY": "your-qwen-api-key",
     "QWEN_API_BASE": "https://dashscope.aliyuncs.com/compatible-mode/v1",
-    "USE_DOC_PATH": "./md/sdk.md",                           // SDK 使用文档路径
-    "SDK_FILE_PATH": "./sdk/sim_sdk.py",                     // 生成的 SDK 文件路径
-    "OPINION_FILE_PATH": "./opinion/opinion.md",             // 审核意见文件路径
-    "HISTORY_FILE_PATH": "./history/history_sim_sdk.py",      // 历史版本文件路径（自动备份）
-    "SDK_LANGUAGE": "python"                                 // 目标语言（可选，AI 会根据文件扩展名自动识别）
+    "USE_DOC_PATH": "./md/your-sdk-document.md",
+    "SDK_FILE_PATH": "./sdk/your-sdk-name.[ext]",
+    "OPINION_FILE_PATH": "./opinion/your-opinion.md",
+    "HISTORY_FILE_PATH": "./history/your-history.[ext]",
+    "SDK_LANGUAGE": "python"
 }
 ```
+
+**参数说明**：
+- `USE_DOC_PATH`: SDK 使用文档路径（用户提供）
+- `SDK_FILE_PATH`: 生成的 SDK 文件路径，`[ext]` 为文件扩展名（如 `.py`, `.js`, `.ts` 等）
+- `OPINION_FILE_PATH`: 审核意见文件路径（自动生成）
+- `HISTORY_FILE_PATH`: 历史版本文件路径（自动备份），建议与 `SDK_FILE_PATH` 使用相同的扩展名
+- `SDK_LANGUAGE`: 目标语言（可选，AI 会根据文件扩展名自动识别）
 
 ### 🌍 多语言配置示例
 
@@ -110,8 +112,8 @@ cp config.default.json config.json
 #### Python SDK
 ```json
 {
-    "SDK_FILE_PATH": "./sdk/sim_sdk.py",
-    "HISTORY_FILE_PATH": "./history/history_sim_sdk.py",
+    "SDK_FILE_PATH": "./sdk/your_sdk.py",
+    "HISTORY_FILE_PATH": "./history/your_sdk_history.py",
     "SDK_LANGUAGE": "python"
 }
 ```
@@ -119,8 +121,8 @@ cp config.default.json config.json
 #### JavaScript SDK
 ```json
 {
-    "SDK_FILE_PATH": "./sdk/sim_sdk.js",
-    "HISTORY_FILE_PATH": "./history/history_sim_sdk.js",
+    "SDK_FILE_PATH": "./sdk/your_sdk.js",
+    "HISTORY_FILE_PATH": "./history/your_sdk_history.js",
     "SDK_LANGUAGE": "javascript"
 }
 ```
@@ -128,8 +130,8 @@ cp config.default.json config.json
 #### TypeScript SDK
 ```json
 {
-    "SDK_FILE_PATH": "./sdk/sim_sdk.ts",
-    "HISTORY_FILE_PATH": "./history/history_sim_sdk.ts",
+    "SDK_FILE_PATH": "./sdk/your_sdk.ts",
+    "HISTORY_FILE_PATH": "./history/your_sdk_history.ts",
     "SDK_LANGUAGE": "typescript"
 }
 ```
@@ -137,8 +139,8 @@ cp config.default.json config.json
 #### Java SDK
 ```json
 {
-    "SDK_FILE_PATH": "./sdk/SimSDK.java",
-    "HISTORY_FILE_PATH": "./history/HistorySimSDK.java",
+    "SDK_FILE_PATH": "./sdk/YourSDK.java",
+    "HISTORY_FILE_PATH": "./history/YourSDKHistory.java",
     "SDK_LANGUAGE": "java"
 }
 ```
@@ -146,8 +148,8 @@ cp config.default.json config.json
 #### Go SDK
 ```json
 {
-    "SDK_FILE_PATH": "./sdk/sim_sdk.go",
-    "HISTORY_FILE_PATH": "./history/history_sim_sdk.go",
+    "SDK_FILE_PATH": "./sdk/your_sdk.go",
+    "HISTORY_FILE_PATH": "./history/your_sdk_history.go",
     "SDK_LANGUAGE": "go"
 }
 ```
@@ -155,8 +157,8 @@ cp config.default.json config.json
 #### Rust SDK
 ```json
 {
-    "SDK_FILE_PATH": "./sdk/sim_sdk.rs",
-    "HISTORY_FILE_PATH": "./history/history_sim_sdk.rs",
+    "SDK_FILE_PATH": "./sdk/your_sdk.rs",
+    "HISTORY_FILE_PATH": "./history/your_sdk_history.rs",
     "SDK_LANGUAGE": "rust"
 }
 ```
@@ -168,7 +170,7 @@ cp config.default.json config.json
 
 ### 3. 准备 SDK 使用文档
 
-将 SDK 使用文档放置在 `md/sdk.md`（或配置文件中指定的路径）。文档应包含：
+将 SDK 使用文档放置在配置文件中指定的 `USE_DOC_PATH` 路径（例如 `md/your-sdk-document.md`）。文档应包含：
 - SDK 的 API 接口说明
 - 使用示例和代码片段
 - 参数说明和返回值描述
@@ -200,7 +202,7 @@ python main.py
 
 - **检查审核意见提示**：从第二轮（count != 0）开始，每轮审核后都会提示：
   ```
-  请检查审核意见{OPINION_FILE_PATH}。如果你认为没有必要继续修改，请输入"pass"。如果你认为有必要继续修改，请输入"reject"：
+  请检查审核意见文件。如果你认为没有必要继续修改，请输入"pass"。如果你认为有必要继续修改，请输入"reject"：
   ```
   - 输入 `pass`：结束流程，使用当前版本
   - 输入 `reject`：继续下一轮迭代修改
@@ -262,42 +264,47 @@ python main.py
 
 #### Python SDK
 ```python
-from sdk.sim_sdk import CursorCLI
+# 假设 SDK_FILE_PATH = "./sdk/your_sdk.py"
+from sdk.your_sdk import YourSDKClass
 
-cli = CursorCLI()
-result = cli.analyze_codebase("分析这个代码库")
+sdk = YourSDKClass()
+result = sdk.some_method("参数")
 ```
 
 #### JavaScript SDK
 ```javascript
-const { CursorCLI } = require('./sdk/sim_sdk');
+// 假设 SDK_FILE_PATH = "./sdk/your_sdk.js"
+const { YourSDKClass } = require('./sdk/your_sdk');
 
-const cli = new CursorCLI();
-const result = cli.analyzeCodebase("分析这个代码库");
+const sdk = new YourSDKClass();
+const result = sdk.someMethod("参数");
 ```
 
 #### TypeScript SDK
 ```typescript
-import { CursorCLI } from './sdk/sim_sdk';
+// 假设 SDK_FILE_PATH = "./sdk/your_sdk.ts"
+import { YourSDKClass } from './sdk/your_sdk';
 
-const cli = new CursorCLI();
-const result = cli.analyzeCodebase("分析这个代码库");
+const sdk = new YourSDKClass();
+const result = sdk.someMethod("参数");
 ```
 
 #### Java SDK
 ```java
-import com.example.sim_sdk.CursorCLI;
+// 假设 SDK_FILE_PATH = "./sdk/YourSDK.java"
+import com.example.your_sdk.YourSDKClass;
 
-CursorCLI cli = new CursorCLI();
-AnalysisResult result = cli.analyzeCodebase("分析这个代码库");
+YourSDKClass sdk = new YourSDKClass();
+Result result = sdk.someMethod("参数");
 ```
 
 #### Go SDK
 ```go
-import "github.com/example/sim_sdk"
+// 假设 SDK_FILE_PATH = "./sdk/your_sdk.go"
+import "github.com/example/your_sdk"
 
-cli := sim_sdk.NewCursorCLI()
-result, err := cli.AnalyzeCodebase("分析这个代码库")
+sdk := your_sdk.NewYourSDKClass()
+result, err := sdk.SomeMethod("参数")
 ```
 
 **注意**：生成的 SDK 可能需要特定的环境变量（如 API key），请根据生成的 SDK 文档进行配置。AI 会根据目标语言的特性自动生成符合该语言习惯的代码风格和最佳实践。
