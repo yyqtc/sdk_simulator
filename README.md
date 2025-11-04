@@ -1,16 +1,24 @@
-# SDK 模拟器
+# SDK 模拟器（Mock SDK Generator）
 
-一个基于 LangGraph 和 AI 代理的 **多语言 SDK 模拟代码自动生成工具**。该工具能够根据 SDK 使用文档自动生成对应**任意编程语言**的模拟 SDK 文件（Python、JavaScript、TypeScript、Java、Go、Rust 等），并通过多轮审核迭代机制确保生成代码的质量和准确性。
+⚠️ **重要说明**：本项目生成的是 **模拟 SDK（Mock SDK/测试桩）**，用于开发测试和模拟真实 SDK 的行为，**并非真实的、可连接实际 API 的 SDK**。
+
+一个基于 LangGraph 和 AI 代理的 **多语言模拟 SDK 代码自动生成工具**。该工具能够根据 SDK 使用文档自动生成对应**任意编程语言**的模拟 SDK 文件（Python、JavaScript、TypeScript、Java、Go、Rust 等），这些生成的代码是**测试桩（Stub/Mock）**，用于模拟真实 SDK 的接口和行为，便于开发和测试，并通过多轮审核迭代机制确保生成代码的质量和准确性。
 
 ## 功能特性
 
-- 🌍 **多语言支持**：✨ **核心亮点** - 支持生成任意编程语言的 SDK（Python、JavaScript、TypeScript、Java、Go、Rust、C#、PHP 等），只需通过配置文件指定目标语言和文件扩展名
-- 🤖 **AI 驱动生成**：使用 Qwen 模型自动根据 SDK 使用文档生成模拟 SDK 代码
-- 🔄 **迭代优化机制**：通过执行-审核-修正的循环流程，不断优化生成的 SDK
+- 🌍 **多语言支持**：✨ **核心亮点** - 支持生成任意编程语言的 **模拟 SDK（Mock SDK/测试桩）**（Python、JavaScript、TypeScript、Java、Go、Rust、C#、PHP 等），只需通过配置文件指定目标语言和文件扩展名
+- 🤖 **AI 驱动生成**：使用 Qwen 模型自动根据 SDK 使用文档生成模拟 SDK 代码（测试桩代码）
+- 🔄 **迭代优化机制**：通过执行-审核-修正的循环流程，不断优化生成的模拟 SDK
 - 👤 **人工审核集成**：每轮审核后支持人工介入决策是否继续迭代
 - 📝 **自动意见管理**：审核员可以将修改意见保存到文件，开发者根据意见进行修正
 - 🛠️ **灵活的工具系统**：提供文件读写、文档解析、历史文件管理等工具，支持完整的开发流程
-- 📚 **历史版本追踪**：自动保存每轮修改前的 SDK 版本到历史文件
+- 📚 **历史版本追踪**：自动保存每轮修改前的模拟 SDK 版本到历史文件
+
+⚠️ **再次提醒**：生成的代码是**模拟/测试桩**，不会真实调用 API，主要用于：
+- 开发和测试环境的接口模拟
+- 前端开发时的后端接口 Mock
+- 单元测试和集成测试的测试桩
+- 学习和理解 SDK API 设计的参考
 
 ## 项目结构
 
@@ -54,15 +62,15 @@ START → counter → execute → review → counter → ...
    - 返回当前的 count 值继续流程
 
 2. **execute（执行节点）**：
-   - 如果是第一轮（count=0）：根据 SDK 使用文档生成模拟 SDK 文件
-   - 如果是后续轮次：根据 SDK 使用文档和审核意见修改 SDK 文件
+   - 如果是第一轮（count=0）：根据 SDK 使用文档生成**模拟 SDK（测试桩）**文件
+   - 如果是后续轮次：根据 SDK 使用文档和审核意见修改模拟 SDK 文件
    - 使用 AI 代理（软件开发工程师角色）执行代码生成/修改
-   - 🌍 **智能语言识别**：AI 会根据文件扩展名和 `SDK_LANGUAGE` 配置自动识别目标语言，生成符合该语言语法和最佳实践的代码
-   - AI 代理会将所做的修改以注释形式体现在 SDK 文件中
-   - 如果需要生成图片，会生成白色纯色图片
+   - 🌍 **智能语言识别**：AI 会根据文件扩展名和 `SDK_LANGUAGE` 配置自动识别目标语言，生成符合该语言语法和最佳实践的**模拟代码（Mock Code）**
+   - AI 代理会将所做的修改以注释形式体现在模拟 SDK 文件中
+   - 如果需要生成图片，会生成白色纯色图片（模拟数据）
 
 3. **review（审核节点）**：
-   - AI 代理（审核员角色）检查生成的 SDK 是否符合使用文档
+   - AI 代理（审核员角色）检查生成的**模拟 SDK（测试桩）**是否符合使用文档
    - 使用结构化输出（Act 类型）来决定下一步行动
    - 如果不符合，将审核意见写入意见文件，返回新的 count 值继续下一轮修改
    - 如果符合，返回审核通过响应，流程将在 counter 节点结束
@@ -170,11 +178,13 @@ cp config.default.json config.json
 
 ### 3. 准备 SDK 使用文档
 
-将 SDK 使用文档放置在配置文件中指定的 `USE_DOC_PATH` 路径（例如 `md/your-sdk-document.md`）。文档应包含：
+将**真实 SDK 的使用文档**放置在配置文件中指定的 `USE_DOC_PATH` 路径（例如 `md/your-sdk-document.md`）。本工具会根据这份文档生成对应的**模拟 SDK（测试桩）**。文档应包含：
 - SDK 的 API 接口说明
 - 使用示例和代码片段
 - 参数说明和返回值描述
 - 任何特殊配置或要求
+
+**注意**：生成的模拟 SDK 会模拟这些接口的行为，但不会真实调用 API。
 
 ## 使用方法
 
@@ -187,14 +197,16 @@ python main.py
 程序将自动执行以下流程：
 
 1. 从 `counter` 节点开始，初始化 count=0
-2. 进入 `execute` 节点，AI 代理根据 SDK 使用文档生成模拟 SDK 代码
-3. 进入 `review` 节点，AI 审核员检查代码是否符合使用文档
+2. 进入 `execute` 节点，AI 代理根据 SDK 使用文档生成**模拟 SDK（测试桩）**代码
+3. 进入 `review` 节点，AI 审核员检查生成的模拟代码是否符合使用文档
 4. 如果审核通过，返回审核通过响应，流程在 `counter` 节点结束
 5. 如果审核不通过，审核员将意见写入意见文件，返回新的 count 值
 6. 返回 `counter` 节点，如果 count != 0，会提示用户检查审核意见
 7. 用户输入 `pass` 或 `reject` 决定是否继续迭代
-8. 如果继续，备份当前 SDK 文件到历史路径，然后重复步骤 2-7
-9. 直到审核通过或用户选择停止，输出最终结果
+8. 如果继续，备份当前模拟 SDK 文件到历史路径，然后重复步骤 2-7
+9. 直到审核通过或用户选择停止，输出最终的模拟 SDK 文件
+
+⚠️ **提醒**：生成的代码是模拟/测试桩，不会真实连接 API 或执行实际的网络请求。
 
 ### 交互提示
 
@@ -258,67 +270,102 @@ python main.py
 - ✅ **PHP** (`.php`) - 支持类、命名空间、类型提示等
 - ✅ **更多语言** - 理论上支持所有编程语言，AI 会根据文档和语言特性自动适配
 
-### 使用生成的 SDK
+### 使用生成的模拟 SDK
+
+⚠️ **重要**：生成的代码是**模拟 SDK（Mock SDK/测试桩）**，用于开发和测试，**不会真实调用 API**。
 
 生成的模拟 SDK 文件位于配置文件中指定的 `SDK_FILE_PATH`。根据不同的语言，使用方式如下：
 
-#### Python SDK
+#### Python 模拟 SDK
 ```python
 # 假设 SDK_FILE_PATH = "./sdk/your_sdk.py"
+# ⚠️ 这是模拟 SDK，不会真实调用 API
 from sdk.your_sdk import YourSDKClass
 
 sdk = YourSDKClass()
-result = sdk.some_method("参数")
+result = sdk.some_method("参数")  # 返回模拟数据，不会真实请求
 ```
 
-#### JavaScript SDK
+#### JavaScript 模拟 SDK
 ```javascript
 // 假设 SDK_FILE_PATH = "./sdk/your_sdk.js"
+// ⚠️ 这是模拟 SDK，不会真实调用 API
 const { YourSDKClass } = require('./sdk/your_sdk');
 
 const sdk = new YourSDKClass();
-const result = sdk.someMethod("参数");
+const result = sdk.someMethod("参数");  // 返回模拟数据
 ```
 
-#### TypeScript SDK
+#### TypeScript 模拟 SDK
 ```typescript
 // 假设 SDK_FILE_PATH = "./sdk/your_sdk.ts"
+// ⚠️ 这是模拟 SDK，不会真实调用 API
 import { YourSDKClass } from './sdk/your_sdk';
 
 const sdk = new YourSDKClass();
-const result = sdk.someMethod("参数");
+const result = sdk.someMethod("参数");  // 返回模拟数据
 ```
 
-#### Java SDK
+#### Java 模拟 SDK
 ```java
 // 假设 SDK_FILE_PATH = "./sdk/YourSDK.java"
+// ⚠️ 这是模拟 SDK，不会真实调用 API
 import com.example.your_sdk.YourSDKClass;
 
 YourSDKClass sdk = new YourSDKClass();
-Result result = sdk.someMethod("参数");
+Result result = sdk.someMethod("参数");  // 返回模拟数据
 ```
 
-#### Go SDK
+#### Go 模拟 SDK
 ```go
 // 假设 SDK_FILE_PATH = "./sdk/your_sdk.go"
+// ⚠️ 这是模拟 SDK，不会真实调用 API
 import "github.com/example/your_sdk"
 
 sdk := your_sdk.NewYourSDKClass()
-result, err := sdk.SomeMethod("参数")
+result, err := sdk.SomeMethod("参数")  // 返回模拟数据
 ```
 
-**注意**：生成的 SDK 可能需要特定的环境变量（如 API key），请根据生成的 SDK 文档进行配置。AI 会根据目标语言的特性自动生成符合该语言习惯的代码风格和最佳实践。
+**重要说明**：
+- ⚠️ **生成的代码是模拟/测试桩，不会真实调用 API**
+- ⚠️ **所有网络请求都是模拟的，返回的是模拟数据**
+- ⚠️ **仅用于开发、测试、学习和理解 SDK 接口设计**
+- ⚠️ **不要在生产环境中使用生成的模拟 SDK 替代真实 SDK**
+- AI 会根据目标语言的特性自动生成符合该语言习惯的代码风格和最佳实践
+- 生成的模拟 SDK 可能需要特定的环境变量（如 API key），但这些配置仅用于模拟，不会真实使用
 
 ## 注意事项
 
-1. **API 密钥安全**：请妥善保管 API 密钥，不要将包含真实密钥的 `config.json` 提交到版本控制系统
-2. **文档格式**：确保 SDK 使用文档格式清晰，包含完整的 API 说明
-3. **生成代码验证**：AI 生成的代码建议进行人工验证，特别是在生产环境使用前
-4. **图片生成**：生成的图片为白色纯色图片（符合模拟 SDK 的要求）
-5. **历史文件管理**：每轮修改前，当前 SDK 文件会自动备份到 `HISTORY_FILE_PATH`，请确保该路径所在目录存在
-6. **修改追踪**：AI 开发代理会在生成的 SDK 文件中以注释形式记录所做的修改，便于追踪变更
-7. **环境变量**：生成的 SDK 可能需要特定的环境变量（如 API key），请根据 SDK 文档在运行环境中正确配置
-8. **WSL 环境**：如果在 WSL 环境下使用生成的 SDK，请注意环境变量的设置需要在 WSL 的 shell 配置文件中进行（如 `~/.bashrc` 或 `~/.zshrc`），因为 Windows 和 WSL 的环境变量是隔离的
+### ⚠️ 重要警告
+
+1. **这不是真实的 SDK**：本项目生成的是**模拟 SDK（Mock SDK/测试桩）**，用于开发和测试，**不会真实调用 API**。所有网络请求都是模拟的，返回的是模拟数据。
+
+2. **不要在生产环境使用**：生成的模拟 SDK **仅用于开发、测试、学习和理解 SDK 接口设计**，**不要在生产环境中使用生成的模拟 SDK 替代真实 SDK**。
+
+3. **用途说明**：生成的模拟 SDK 适用于：
+   - ✅ 开发和测试环境的接口模拟
+   - ✅ 前端开发时的后端接口 Mock
+   - ✅ 单元测试和集成测试的测试桩
+   - ✅ 学习和理解 SDK API 设计的参考
+   - ❌ **不适用于生产环境的真实 API 调用**
+
+### 其他注意事项
+
+4. **API 密钥安全**：请妥善保管 API 密钥，不要将包含真实密钥的 `config.json` 提交到版本控制系统
+
+5. **文档格式**：确保 SDK 使用文档格式清晰，包含完整的 API 说明
+
+6. **生成代码验证**：AI 生成的模拟代码建议进行人工验证，确保符合预期
+
+7. **图片生成**：生成的图片为白色纯色图片（符合模拟 SDK 的要求）
+
+8. **历史文件管理**：每轮修改前，当前模拟 SDK 文件会自动备份到 `HISTORY_FILE_PATH`，请确保该路径所在目录存在
+
+9. **修改追踪**：AI 开发代理会在生成的模拟 SDK 文件中以注释形式记录所做的修改，便于追踪变更
+
+10. **环境变量**：生成的模拟 SDK 可能需要特定的环境变量（如 API key），但这些配置仅用于模拟，不会真实使用
+
+11. **WSL 环境**：如果在 WSL 环境下使用生成的模拟 SDK，请注意环境变量的设置需要在 WSL 的 shell 配置文件中进行（如 `~/.bashrc` 或 `~/.zshrc`），因为 Windows 和 WSL 的环境变量是隔离的
 
 ## 许可证
 
@@ -352,12 +399,13 @@ result, err := sdk.SomeMethod("参数")
 
 ### v0.3.0
 - 🎉 初始版本发布
-- 🌍 **核心功能**：支持生成任意编程语言的 SDK（Python、JavaScript、TypeScript、Java、Go、Rust、C#、PHP 等）
-- 支持基于文档的 SDK 自动生成
+- 🌍 **核心功能**：支持生成任意编程语言的**模拟 SDK（Mock SDK/测试桩）**（Python、JavaScript、TypeScript、Java、Go、Rust、C#、PHP 等）
+- ⚠️ **重要说明**：生成的代码是模拟/测试桩，不会真实调用 API，仅用于开发、测试和学习
+- 支持基于文档的模拟 SDK 自动生成
 - 实现多轮审核迭代机制
 - 集成人工审核功能
 - 支持历史版本备份
 - 支持修改注释追踪
-- 支持通过配置文件自定义生成的 SDK 文件路径和语言类型
-- AI 自动识别目标语言并生成符合该语言最佳实践的代码
+- 支持通过配置文件自定义生成的模拟 SDK 文件路径和语言类型
+- AI 自动识别目标语言并生成符合该语言最佳实践的模拟代码
 
